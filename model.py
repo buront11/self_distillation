@@ -11,24 +11,55 @@ class CNN(nn.Module):
         self.cnn_block1 = nn.Sequential(nn.Conv2d(3,64,1),
                                         nn.Conv2d(64,64,1),nn.MaxPool2d(2,2))
 
+        # ダウンサンプリングしてshapeを合わせる必要がある
+        self.bottleneck1 = nn.Conv2d(64,1,1,bias=False)
+        self.student1 = nn.Sequential(nn.Linear(64*8*8,120),nn.ReLU(),
+                                    nn.Linear(120,84),nn.ReLU(),
+                                    nn.Linear(84,10))
+
         self.cnn_block2 = nn.Sequential(nn.Conv2d(64,128,1),
                                         nn.Conv2d(128,128,1),nn.MaxPool2d(2,2))
+
+        self.bottleneck2 = nn.Conv2d(128,1,1,bias=False)
+        self.student2 = nn.Sequential(nn.Linear(64*8*8,120),nn.ReLU(),
+                                    nn.Linear(120,84),nn.ReLU(),
+                                    nn.Linear(84,10))
 
         self.cnn_block3 = nn.Sequential(nn.Conv2d(128,256,1),
                                         nn.Conv2d(256,256,1))
 
+        self.bottleneck3 = nn.Conv2d(256,1,1,bias=False)
+        self.student3 = nn.Sequential(nn.Linear(64*8*8,120),nn.ReLU(),
+                                    nn.Linear(120,84),nn.ReLU(),
+                                    nn.Linear(84,10))
+
         self.cnn_block4 = nn.Sequential(nn.Conv2d(256,256,1),
                                         nn.Conv2d(256,256,1),nn.MaxPool2d(2,2))
 
-        self.full = nn.Sequential(nn.Linear(64*8*8,120),nn.ReLU(),
+        self.bottleneck4 = nn.Conv2d(256,1,1,bias=False)
+        self.student4 = nn.Sequential(nn.Linear(64*8*8,120),nn.ReLU(),
+                                    nn.Linear(120,84),nn.ReLU(),
+                                    nn.Linear(84,10))
+
+        self.full = nn.Sequential(nn.Linear(256*4*4,120),nn.ReLU(),
                                   nn.Linear(120,84),nn.ReLU(),
                                   nn.Linear(84,10))
 
     def forward(self,x):
+        c = nn.
         x = self.cnn_block1(x)
+        h_1 = self.bottleneck1(x)
+        print(h_1.shape)
         x = self.cnn_block2(x)
+        h_2 = self.bottleneck2(x)
+        print(h_2.shape)
         x = self.cnn_block3(x)
+        h_3 = self.bottleneck3(x)
+        print(h_3.shape)
         x = self.cnn_block4(x)
+        print(x.shape)
+
+        dd
         x = self.full(torch.flatten(x, 1))
 
         return x
